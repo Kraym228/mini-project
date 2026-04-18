@@ -1,0 +1,17 @@
+{
+  "python.linting.pylintEnabled": true,
+  "python.analysis.cachingLevel": "minimal",
+  "editor.inlineSuggest.enabled": true,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": true,
+    "strings": true
+  },
+  "editor.suggest.showWords": true,
+  "github.copilot.enable": {
+    "*": true
+  },
+  "github.copilot.inlineSuggest.enable": true,
+  "github.copilot.showEditorCompletions": true,
+  "codeium.disableSupercomplete": false
+}
