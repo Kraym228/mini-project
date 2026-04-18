@@ -2,6 +2,6 @@ services:
   regression:
     build: .
     container_name: pytest-runner
-    command: sh -c "python -m pytest tests/"
+    command: sh -c "python -m pytest tests/ --alluredir=allure-results"
     volumes:
       - ./allure-results:/usr/workspace/allure-results
