@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Checkout gh-pages branch (for Allure history)
         uses: actions/checkout@v4
@@ -19,28 +20,29 @@ jobs:
           path: ./.github/gh-pages
         continue-on-error: true
 
-      - name: Create allure-results directory
-        run: mkdir -p allure-results
+      - name: Create directories for Allure
+        run: |
+          mkdir -p allure-results
+          mkdir -p allure-report
 
-      - name: Copy Allure history from previous runs (if exists)
+      - name: Copy Allure history from previous runs
         run: |
           if [ -d "./.github/gh-pages/history" ]; then
             cp -r ./.github/gh-pages/history allure-results/
-            echo "History copied"
+            echo "History copied from previous run"
           else
             echo "No previous history found (first run)"
           fi
 
       - name: Run UI-tests via docker-compose
-        env:
-          LOGIN: ${{ secrets.LOGIN }}
-          PASSWORD: ${{ secrets.PASSWORD }}
         run: |
+          export LOGIN="${{ secrets.LOGIN }}"
+          export PASSWORD="${{ secrets.PASSWORD }}"
           docker compose up --exit-code-from regression || true
 
-      - name: Debug - Check if allure-results exists
+      - name: Debug - Show allure-results content
         run: |
-          echo "=== Checking allure-results ==="
+          echo "=== allure-results contains: ==="
           ls -la allure-results/ || echo "allure-results not found"
 
       - name: Install Allure on runner
@@ -55,16 +57,17 @@ jobs:
       - name: Generate Allure report
         run: |
           allure generate allure-results --clean -o allure-report
-          echo "=== Checking allure-report after generation ==="
+          echo "=== allure-report contains: ==="
           ls -la allure-report/
 
-      - name: Prepare gh-pages directory
+      - name: Prepare files for GitHub Pages
         run: |
           mkdir -p ./.github/gh-pages
           cp -r allure-report/* ./.github/gh-pages/
+          echo "Files copied to gh-pages directory"
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@4.1.5
+        uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
           token: ${{ secrets.CI_TOKEN }}
           branch: gh-pages
