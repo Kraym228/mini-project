@@ -45,13 +45,12 @@ jobs:
 
       - name: Generate Allure report
         run: |
-          mkdir -p allure-report
-          docker compose run --rm regression /bin/sh -c "allure generate allure-results --clean -o allure-report" || echo "Allure generate failed"
-
-      - name: Debug - Check if allure-report exists
-        run: |
-          echo "=== Checking allure-report ==="
-          ls -la allure-report/ || echo "allure-report not found"
+          echo "=== Checking allure-results content ==="
+          ls -la allure-results/
+          echo "=== Generating report ==="
+          docker compose run --rm regression /bin/sh -c "allure generate allure-results --clean -o allure-report" 2>&1
+          echo "=== Checking allure-report after generation ==="
+          ls -la allure-report/
 
       - name: Prepare gh-pages directory
         run: |
